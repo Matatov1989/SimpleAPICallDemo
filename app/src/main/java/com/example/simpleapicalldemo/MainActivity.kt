@@ -10,7 +10,6 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.IOException
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
@@ -114,7 +113,6 @@ class MainActivity : AppCompatActivity() {
         private fun cancelProgressDialog() {
             customProgressDialog.dismiss()
         }
-
     }
 
     private fun parseJsonByGson(result: String) {
@@ -163,5 +161,4 @@ class MainActivity : AppCompatActivity() {
             Log.i("ARRAY_ITEM_VALUE", "$value")
         }
     }
-
 }
