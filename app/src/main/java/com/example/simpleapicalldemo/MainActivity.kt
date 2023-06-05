@@ -5,6 +5,7 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.google.gson.Gson
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -99,32 +100,9 @@ class MainActivity : AppCompatActivity() {
             cancelProgressDialog()
             Log.i("JSON_RESPONSE", result.toString())
 
-            val jsonObject = JSONObject(result)
-            val message = jsonObject.optString("message")
-            Log.i("JSON", message)
-            val userId = jsonObject.optString("user_id")
-            Log.i("JSON", userId)
-            val name = jsonObject.optString("name")
-            Log.i("JSON", name)
+            parseJsonByGson(result!!)
 
-            val profileDetailsObject = jsonObject.getJSONObject("profile_details")
-            val isProfileComplete = profileDetailsObject.getBoolean("is_profile_completed")
-            Log.i("JSON", "$isProfileComplete")
-
-            val dataListArray = jsonObject.optJSONArray("data_list")
-            Log.i("JSON", "${dataListArray.length()}")
-
-            for (item in 0 until dataListArray.length()) {
-                Log.i("JSON", "${dataListArray[item]}")
-
-                val dataItemObject: JSONObject = dataListArray[item] as JSONObject
-
-                val id = dataItemObject.optInt("id")
-                Log.i("JSON", "$id")
-
-                val value = dataItemObject.optString("value")
-                Log.i("JSON", "$value")
-            }
+//            parseJsonOld(result!!)
         }
 
         private fun showProgressDialog() {
@@ -137,6 +115,53 @@ class MainActivity : AppCompatActivity() {
             customProgressDialog.dismiss()
         }
 
+    }
+
+    private fun parseJsonByGson(result: String) {
+        val responseData = Gson().fromJson(result, ResponseData::class.java)
+        Log.i("MESSAGE", "${responseData.message}")
+        Log.i("USER_ID", "${responseData.user_id}")
+        Log.i("NAME", "${responseData.name}")
+        Log.i("MAIL", "${responseData.email}")
+        Log.i("MOBILE", "${responseData.mobile}")
+
+        Log.i("IS_COMPLETED", "${responseData.profile_details.is_profile_completed}")
+        Log.i("rating", "${responseData.profile_details.rating}")
+
+        for (item in responseData.data_list.indices) {
+            Log.i("ARRAY_ITEM", "${responseData.data_list[item]}")
+            Log.i("ARRAY_ITEM_ID", "${responseData.data_list[item].id}")
+            Log.i("ARRAY_ITEM_VALUE", "${responseData.data_list[item].value}")
+        }
+    }
+
+    private fun parseJsonOld(result: String) {
+        val jsonObject = JSONObject(result)
+        val message = jsonObject.optString("message")
+        Log.i("MESSAGE", message)
+        val userId = jsonObject.optString("user_id")
+        Log.i("USER_ID", userId)
+        val name = jsonObject.optString("name")
+        Log.i("NAME", name)
+
+        val profileDetailsObject = jsonObject.getJSONObject("profile_details")
+        val isProfileComplete = profileDetailsObject.getBoolean("is_profile_completed")
+        Log.i("IS_COMPLETED", "$isProfileComplete")
+
+        val dataListArray = jsonObject.optJSONArray("data_list")
+        Log.i("ARRAY_SIZE", "${dataListArray.length()}")
+
+        for (item in 0 until dataListArray.length()) {
+            Log.i("ARRAY_ITEM", "${dataListArray[item]}")
+
+            val dataItemObject: JSONObject = dataListArray[item] as JSONObject
+
+            val id = dataItemObject.optInt("id")
+            Log.i("ARRAY_ITEM_ID", "$id")
+
+            val value = dataItemObject.optString("value")
+            Log.i("ARRAY_ITEM_VALUE", "$value")
+        }
     }
 
 }
